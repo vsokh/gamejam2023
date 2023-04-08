@@ -5,7 +5,9 @@
 
 enum class NodeState : int8_t
 {
-    Open = 0,
+    Start = 0,
+    Finish,
+    Open,
     Closed
 };
 
@@ -20,7 +22,7 @@ class MazeGenerator
     Maze _maze{};
 
     public:
-    explicit MazeGenerator(int h = 6, int w = 6, int paths = 3)
+    explicit MazeGenerator(int h = 10, int w = 10, int paths = 1)
         : _height{h}, _width{w}
         , _paths{paths}
         , _maze(_height, std::vector<NodeState>(_width, NodeState::Closed))
@@ -36,6 +38,8 @@ class MazeGenerator
         int finishX = 0; // rand() % _height;
         int finishY = 5; // rand() % _width;
 
+        _maze[startX][startY] = NodeState::Start;
+        _maze[finishX][finishY] = NodeState::Finish;
         std::vector<std::vector<bool>> visited(_height, std::vector<bool>(_width, 0));
         for (int pathIdx = 0; pathIdx < _paths; ++pathIdx) {
             GenerateImpl(startX, startY, finishX, finishY, visited);
@@ -47,11 +51,12 @@ class MazeGenerator
     {
         for (auto row : _maze) {
             for (auto e : row) {
-                if (e == NodeState::Open) {
-                    std::cout << "-";
-                } else {
-                    std::cout << "#";
-                }
+                switch (e) {
+                    case NodeState::Open:   std::cout << "-"; break;
+                    case NodeState::Closed: std::cout << "#"; break;
+                    case NodeState::Start:  std::cout << "S"; break;
+                    case NodeState::Finish: std::cout << "F"; break;
+                };
             }
             std::cout << "\n";
         }
@@ -69,11 +74,15 @@ private:
 
         visited[currX][currY] = 1;
 
-        _maze[currX][currY] = NodeState::Open;
+        if (_maze[currX][currY] != NodeState::Start) {
+            _maze[currX][currY] = NodeState::Open;
+        }
 
         std::vector<std::pair<int,int>> neighbors = GetNeighbors(currX, currY, visited);
-        for (auto neighbor : neighbors) {
-            if (GenerateImpl(neighbor.first, neighbor.second, finishX, finishY, visited)) {
+        int N = neighbors.size();
+        for (int idx = 0; idx < N; ++idx) {
+            auto neighbor = neighbors[rand()%N];
+            if (!visited[neighbor.first][neighbor.second] && GenerateImpl(neighbor.first, neighbor.second, finishX, finishY, visited)) {
                 return true;
             }
         }
@@ -83,16 +92,16 @@ private:
     std::vector<std::pair<int,int>> GetNeighbors(int currX, int currY, const std::vector<std::vector<bool>>& visited)
     {
         std::vector<std::pair<int,int>> neighbors;
-        if (currX - 1 >= 0 && currY && visited[currX-1][currY]) { // left
+        if (currX - 1 >= 0 && !visited[currX-1][currY]) { // left
             neighbors.push_back(std::pair<int,int>{currX-1, currY});
         }
-        if (currX + 1 >= 0 && currY && visited[currX+1][currY]) { // right
+        if (currX + 1 < _width && !visited[currX+1][currY]) { // right
             neighbors.push_back(std::pair<int,int>{currX+1, currY});
         }
-        if (currX >= 0 && currY - 1 && visited[currX][currY-1]) { // up
+        if (currY - 1 >= 0 && !visited[currX][currY-1]) { // up
             neighbors.push_back(std::pair<int,int>{currX, currY-1});
         }
-        if (currX >= 0 && currY + 1 && visited[currX][currY+1]) { // down
+        if (currY + 1 < _height && !visited[currX][currY+1]) { // down
             neighbors.push_back(std::pair<int,int>{currX, currY+1});
         }
         return neighbors;
