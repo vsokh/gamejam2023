@@ -92,8 +92,8 @@ private:
         if (currX >= 0 && currY - 1 && visited[currX][currY-1]) { // up
             neighbors.push_back(std::pair<int,int>{currX, currY-1});
         }
-        if (currX >= 0 && currY + 1 && visited[currX][currY]) { // down
-            neighbors.push_back(std::pair<int,int>{currX, currY});
+        if (currX >= 0 && currY + 1 && visited[currX][currY+1]) { // down
+            neighbors.push_back(std::pair<int,int>{currX, currY+1});
         }
         return neighbors;
     }
