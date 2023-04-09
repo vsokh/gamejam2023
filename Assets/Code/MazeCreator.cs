@@ -28,21 +28,21 @@ public class MazeCreator: MonoBehaviour
 		Vector2Int newPos;
 		LinkedList<Vector2Int> road = new LinkedList<Vector2Int>();
 		road.AddFirst(currentPos);
-		int kek = 0;
-		while (kek < 10)
-		{
-			//List<Vector2Int> n = GetNeighbors(currentPos, road.Last.Previous, dimentions);
-			newPos = n[Random.Range(0, n.Count)];
-			while (road.Contains(newPos))
-			{
-				Vector2Int discarded = road.Pop();
-				maze[discarded.x][discarded.y] = NodeState.Closed;
-			}
-			maze[newPos.x][newPos.y] = NodeState.Open;
-			//road.Push(newPos);
-			currentPos = newPos;
-			kek++;
-		}
+		// int kek = 0;
+		// while (kek < 10)
+		// {
+		// 	//List<Vector2Int> n = GetNeighbors(currentPos, road.Last.Previous, dimentions);
+		// 	//newPos = n[Random.Range(0, n.Count)];
+		// 	while (road.Contains(newPos))
+		// 	{
+		// 		Vector2Int discarded = road.Pop();
+		// 		maze[discarded.x][discarded.y] = NodeState.Closed;
+		// 	}
+		// 	maze[newPos.x][newPos.y] = NodeState.Open;
+		// 	//road.Push(newPos);
+		// 	currentPos = newPos;
+		// 	kek++;
+		// }
 		return maze;
 	}
 
