@@ -7,10 +7,15 @@ public class SoundEffects : MonoBehaviour
     public static SoundEffects instance;
 
     public AudioSource src;
+    public AudioSource disconnectSrc;
 
     public void Play()
     {
         src.Play();
+    }
+    public void DisconnectPlay()
+    {
+        disconnectSrc.Play();
     }
     public void Awake()
     {

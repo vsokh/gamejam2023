@@ -51,19 +51,19 @@ public class GameLogic : MonoBehaviour
 				GameObject node = Instantiate(NodePrefub, new Vector3(newCord.x, newCord.y, 0), Quaternion.identity, transform);
 				if (mazeMatrix[i][j] == NodeState.Closed)
 				{
-					node.GetComponent<Image>().color = Color.red;
+					node.GetComponent<Image>().color = new Color(1, 0.5f, 0.5f);
 					node.GetComponent<NodeConnector>().isClosed = true;
 				}
 				else if (mazeMatrix[i][j] == NodeState.Start)
 				{
 					_nodeList.Add(node);
-					node.GetComponent<Image>().color = Color.yellow;
+					node.GetComponent<Image>().color = new Color(0.8f, 1, 0.35f);
 					startNode = node;
 					startCoords = new Vector2Int(i, j);
 				}
 				else if (mazeMatrix[i][j] == NodeState.Finish)
 				{
-					node.GetComponent<Image>().color = Color.yellow;
+					node.GetComponent<Image>().color = new Color(0.35f, 1, 0.35f);
 					finishNode = node;
 					finishCoords = new Vector2Int(i, j);
 					node.GetComponent<NodeConnector>().isFinish = true;
@@ -108,15 +108,16 @@ public class GameLogic : MonoBehaviour
 
 	public void ConnectTo(GameObject newNode)
 	{
-		SoundEffects.instance.Play();
 
 		if (_nodeList.Contains(newNode))
 		{
 			_commandsList.RemoveAt(_commandsList.Count - 1);
 			_nodeList.RemoveAt(_nodeList.Count - 1);
+			SoundEffects.instance.DisconnectPlay();
 		}
 		else 
 		{
+			SoundEffects.instance.Play();
 			GameObject currentNode = _nodeList[_nodeList.Count - 1];
 			if (newNode.transform.position.x == currentNode.transform.position.x)
 			{
@@ -171,8 +172,13 @@ public class GameLogic : MonoBehaviour
 			{
 				currNode.GetComponent<LineRenderer>().enabled = false;
 				nextNode.GetComponent<NodeConnector>().connect.Play();
+				SoundEffects.instance.DisconnectPlay();
 			}
-			else currNode.GetComponent<NodeConnector>().ReverseConnection(nextNode);
+			else
+			{
+				currNode.GetComponent<NodeConnector>().ReverseConnection(nextNode);
+				SoundEffects.instance.Play();
+			}
 			currNode = nextNode;
 			yield return new WaitForSeconds(deley);
 		}
