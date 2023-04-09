@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public enum NodeState : sbyte
 {
@@ -34,15 +35,15 @@ public class MazeGenerator
 
     public NodeState[][] Generate()
     {
-        // TODO: make sure start != finish
-        int startX = 5; // new Random().Next(_height);
-        int startY = 0; // new Random().Next(_width);
+        int startX = new System.Random().Next(_height);
+        int startY = new System.Random().Next(_width);
 
-        int finishX = 0; // new Random().Next(_height);
-        int finishY = 5; // new Random().Next(_width);
+        int finishX = new System.Random().Next(_height);
+        int finishY = new System.Random().Next(_width);
 
         _maze[startX][startY] = NodeState.Start;
         _maze[finishX][finishY] = NodeState.Finish;
+
         bool[][] visited = new bool[_height][];
         for (int i = 0; i < _height; i++)
         {
@@ -54,7 +55,7 @@ public class MazeGenerator
         }
         for (int pathIdx = 0; pathIdx < _paths; pathIdx++)
         {
-            GenerateImpl(startX, startY, finishX, finishY, visited);
+            GenerateImpl(startX, startY, finishX, finishY, ref visited);
         }
         return _maze;
     }
@@ -77,7 +78,7 @@ public class MazeGenerator
         }
     }
 
-    private bool GenerateImpl(int currX, int currY, int finishX, int finishY, List<List<bool>> visited)
+    private bool GenerateImpl(int currX, int currY, int finishX, int finishY, ref bool[][] visited)
     {
         if (currX < 0 || currX >= _width)  return false;
         if (currY < 0 || currY >= _height) return false;
@@ -92,18 +93,18 @@ public class MazeGenerator
             _maze[currX][currY] = NodeState.Open;
         }
 
-        List<(int,int)> neighbors = GetNeighbors(currX, currY, visited);
-        int N = neighbors.Count;
+        List<(int,int)> neighbors = GetNeighbors(currX, currY, ref visited);
+        int N = neighbors.Count-1;
         for (int idx = 0; idx < N; ++idx) {
-            var neighbor = neighbors[rand.Next(N)];
-            if (!visited[neighbor.Item1][neighbor.Item2] && GenerateImpl(neighbor.Item1, neighbor.Item2, finishX, finishY, visited)) {
+            var neighbor = neighbors[UnityEngine.Random.Range(0, N)];
+            if (!visited[neighbor.Item1][neighbor.Item2] && GenerateImpl(neighbor.Item1, neighbor.Item2, finishX, finishY, ref visited)) {
                 return true;
             }
         }
         return false;
     }
 
-    private List<(int,int)> GetNeighbors(int currX, int currY, List<List<bool>> visited)
+    private List<(int,int)> GetNeighbors(int currX, int currY, ref bool[][] visited)
     {
         List<(int,int)> neighbors = new List<(int,int)>();
         if (currX - 1 >= 0 && !visited[currX-1][currY]) { // left
