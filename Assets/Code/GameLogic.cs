@@ -40,12 +40,12 @@ public class GameLogic : MonoBehaviour
 					node.GetComponent<Image>().color = Color.red;
 					node.GetComponent<NodeConnector>().isClosed = true;
 				}
-				else if (mazeMatrix[i, j] ==  MazeCreator.NodeState.Start)
+				else if (mazeMatrix[i][j] == NodeState.Start)
 				{
 					_pathList.Add(node);
 					node.GetComponent<Image>().color = Color.yellow;
 				}
-				else if (mazeMatrix[i, j] ==  MazeCreator.NodeState.Finish)
+				else if (mazeMatrix[i][j] == NodeState.Finish)
 				{
 					node.GetComponent<Image>().color = Color.yellow;
 				}
