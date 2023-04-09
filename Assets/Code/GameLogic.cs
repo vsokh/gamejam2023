@@ -12,7 +12,7 @@ public class GameLogic : MonoBehaviour
 	public GameObject NodePrefub;
 	public int dimentions = 5;
 
-	private List<GameObject> _pathList;
+	private List<GameObject> _pathList = new List<GameObject>();
 
 	private float step;
 	// Start is called before the first frame update
