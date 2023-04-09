@@ -25,7 +25,6 @@ public class GameLogic : MonoBehaviour
 	[SerializeField] private List<MoveSet> _commandsList = new List<MoveSet>();
 
 	private float step;
-	// Start is called before the first frame update
 	void Start()
 	{
 		//Generate Maze
@@ -98,6 +97,8 @@ public class GameLogic : MonoBehaviour
 
 	public void ConnectTo(GameObject newNode)
 	{
+		SoundEffects.instance.Play();
+
 		if (_nodeList.Contains(newNode))
 		{
 			_commandsList.RemoveAt(_commandsList.Count - 1);
