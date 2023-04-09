@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class GameLogic : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class GameLogic : MonoBehaviour
 	private GameObject activeNode = null;
 	public GameObject NodePrefub;
 	public int dimentions = 5;
+
+	private List<GameObject> _pathList;
 
 	private float step;
 	// Start is called before the first frame update
@@ -37,6 +40,16 @@ public class GameLogic : MonoBehaviour
 					node.GetComponent<Image>().color = Color.red;
 					node.GetComponent<NodeConnector>().isClosed = true;
 				}
+				else if (mazeMatrix[i, j] ==  MazeCreator.NodeState.Start)
+				{
+					_pathList.Add(node);
+					node.GetComponent<Image>().color = Color.yellow;
+				}
+				else if (mazeMatrix[i, j] ==  MazeCreator.NodeState.Finish)
+				{
+					node.GetComponent<Image>().color = Color.yellow;
+				}
+
 				node.transform.localScale = new Vector3(step / 100, step / 100, step / 100);
 				node.GetComponent<NodeConnector>().gl = this;
 				node.SetActive(true);
@@ -52,8 +65,15 @@ public class GameLogic : MonoBehaviour
 		if (testNode.transform.position.x != activeNode.transform.position.x && 
 		testNode.transform.position.y != activeNode.transform.position.y) return false;
 		if (Vector3.Distance(testNode.transform.position, activeNode.transform.position) > step * 1.1f) return false;
+		if (_pathList.Contains(testNode) && _pathList[_pathList.Count - 2] != testNode) return false;
 
 		return true;
+	}
+
+	public bool IsListHead(GameObject test)
+	{
+		if (_pathList.Count == 0) return false;
+		return _pathList[_pathList.Count - 1] == test;
 	}
 
 	public void SetActiveNode(GameObject node)
@@ -64,8 +84,28 @@ public class GameLogic : MonoBehaviour
 	{
 		return activeNode;
 	}
+
+	public void ConnectTo(GameObject newNode)
+	{
+		_pathList.Add(newNode);
+		return ;
+		if (_pathList.Count > 1 && newNode == _pathList[_pathList.Count - 2])
+		{
+			Debug.Log("AAAAAAAAAAAAAAa");
+			//activeNode.GetComponent<LineRenderer>().enabled = false;
+			//newNode.GetComponent<LineRenderer>().enabled = false;
+			_pathList.Remove(activeNode);
+		}
+		else
+		{
+			_pathList.Add(newNode);
+		}		
+	}
 	void Update()
 	{
-		
+		if (Input.GetMouseButtonUp(0) && activeNode)
+		{
+			activeNode.GetComponent<NodeConnector>().OnPointerUp(null);
+		}
 	}
 }

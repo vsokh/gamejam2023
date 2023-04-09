@@ -6,10 +6,10 @@ public class MazeCreator: MonoBehaviour
 {
 	public enum NodeState : short
 	{
-		Start = 0,
+		Open = 0,
+		Closed,
+		Start,
 		Finish,
-		Open,
-		Closed
 	};
 
 	public NodeState[][] Generate(int dimentions)

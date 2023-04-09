@@ -4990,7 +4990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   width: 8
-  color: {r: 0.1830188, g: 0.58340424, b: 1, a: 1}
+  color: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
   isClosed: 0
   gl: {fileID: 0}
   ripples: {fileID: 7878671267748846811}

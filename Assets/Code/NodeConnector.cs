@@ -14,7 +14,6 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 	private LineRenderer lr;
 	private Vector3[] linePoints = new Vector3[2];
 	private bool trackMouse = false;
-	private bool isSnapping = false;
 	private GameObject snappingNode = null;
 	private Color _hlColor;
 
@@ -37,25 +36,30 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
-		gl.SetActiveNode(gameObject);
-		trackMouse = true;
-		lr.enabled = true;
+		if (gl.IsListHead(gameObject))
+		{
+			gl.SetActiveNode(gameObject);
+			trackMouse = true;
+			lr.enabled = true;
+		}
 	}
  
 	public void OnPointerUp(PointerEventData eventData)
 	{
-		if (snappingNode && gl.IsValidTarget(snappingNode))
+		if (gameObject == gl.GetActiveNode())
 		{
-			linePoints[1] = snappingNode.transform.position;
-			lr.SetPositions (linePoints);
-			snappingNode.GetComponent<NodeConnector>().connect.Play();
+			if (snappingNode && gl.IsValidTarget(snappingNode))
+			{
+				linePoints[1] = snappingNode.transform.position;
+				lr.SetPositions (linePoints);
+				snappingNode.GetComponent<NodeConnector>().connect.Play();
+			}
+			else
+				lr.enabled = false;
+			trackMouse = false;
+			snappingNode = null;
+			gl.SetActiveNode(null);
 		}
-		else
-			lr.enabled = false;
-		trackMouse = false;
-		isSnapping = false;
-		snappingNode = null;
-		gl.SetActiveNode(null);
 	}
 
 	public void OnPointerEnter(PointerEventData eventData)
@@ -66,6 +70,11 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 			{
 				GameObject activeNode = gl.GetActiveNode();
 				activeNode.GetComponent<NodeConnector>().LineSnap(gameObject);
+				eventData.button = PointerEventData.InputButton.Left;
+				activeNode.GetComponent<Button>().OnPointerUp(eventData);
+				activeNode.GetComponent<NodeConnector>().OnPointerUp(eventData);
+				gl.ConnectTo(gameObject);
+				OnPointerDown(eventData);
 				ripples.Play();
 			}
 			else
@@ -89,18 +98,8 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 		GetComponent<Button>().colors = colorVar;
 	}
 
-	// public void OnPointerMove(PointerEventData eventData)
-	// {
-	// 	GameObject activeNode = gl.GettActiveNode();
-	// 	if (activeNode && gameObject != activeNode)
-	// 	{
-	// 		activeNode.GetComponent<NodeConnector>().LineRelease();
-	// 	}
-	// }
-
 	public void LineSnap(GameObject candicate)
 	{
-		isSnapping = true;
 		snappingNode = candicate;
 		// Camera c = Camera.main;
 		// Vector3 mousePos = c.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, c.nearClipPlane));
@@ -113,7 +112,6 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 
 	public void LineRelease()
 	{
-		isSnapping = false;
 		snappingNode = null;
 	}
 	void Update()
@@ -122,15 +120,7 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 		{
 			Camera c = Camera.main;
 			Vector3 mousePos = c.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, c.nearClipPlane));
-			if (isSnapping)
-			{
-				linePoints[1] = (snappingNode.transform.position + mousePos) / 2;
-			}
-			else
-			{
-				linePoints[1] = mousePos;
-			}
-			
+			linePoints[1] = mousePos;
 			linePoints[1].z = 0;
 			lr.SetPositions (linePoints);
 		}
