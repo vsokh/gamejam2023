@@ -15,13 +15,18 @@ public class GameLogic : MonoBehaviour
 	}
 	[SerializeField] private MazeGenerator mazeGenerator;
 	[SerializeField] private MazeCreator mazeCreator;
+	[SerializeField] private GameObject EndMenu;
+	[SerializeField] private GameObject WinMenu;
 	private NodeState[][] mazeMatrix;
 	private GameObject activeNode = null;
 	private GameObject finishNode = null;
 	private Vector2Int finishCoords;
 	private GameObject startNode = null;
 	private Vector2Int startCoords;
+	public bool attemptFeiled = false;
 	public GameObject NodePrefub;
+	public GameObject StartPrefub;
+	public GameObject FinishPrefub;
 	public int dimentions = 5;
 	public bool pathCreated = false;
 
@@ -52,7 +57,7 @@ public class GameLogic : MonoBehaviour
 				if (mazeMatrix[i][j] == NodeState.Closed)
 				{
 					node.GetComponent<Image>().color = new Color(1, 0.5f, 0.5f);
-					node.GetComponent<NodeConnector>().isClosed = true;
+					node.GetComponent<NodeConnector>().willClose = true;
 				}
 				else if (mazeMatrix[i][j] == NodeState.Start)
 				{
@@ -60,6 +65,16 @@ public class GameLogic : MonoBehaviour
 					node.GetComponent<Image>().color = new Color(0.8f, 1, 0.35f);
 					startNode = node;
 					startCoords = new Vector2Int(i, j);
+					GameObject temp = Instantiate(StartPrefub, new Vector3(newCord.x - step, newCord.y, 0), Quaternion.identity, transform);
+					temp.transform.localScale = new Vector3(3 * step / temp.transform.localScale.x, 3 * step / temp.transform.localScale.y, 1);
+					LineRenderer lr = temp.GetComponent<LineRenderer>();
+					lr.widthMultiplier = 8;
+					Vector3[] linePoints = new Vector3[2];
+					linePoints[0] = temp.transform.position;
+					linePoints[0].z = 1;
+					linePoints[1] = node.transform.position;
+					linePoints[1].z = 1;
+					lr.SetPositions(linePoints);
 				}
 				else if (mazeMatrix[i][j] == NodeState.Finish)
 				{
@@ -67,6 +82,16 @@ public class GameLogic : MonoBehaviour
 					finishNode = node;
 					finishCoords = new Vector2Int(i, j);
 					node.GetComponent<NodeConnector>().isFinish = true;
+					GameObject temp = Instantiate(FinishPrefub, new Vector3(newCord.x + step, newCord.y, 0), Quaternion.identity, transform);
+					temp.transform.localScale = new Vector3(0.7f * step / temp.transform.localScale.x, 0.7f * step / temp.transform.localScale.y, 1);
+					LineRenderer lr = temp.GetComponent<LineRenderer>();
+					lr.widthMultiplier = 8;
+					Vector3[] linePoints = new Vector3[2];
+					linePoints[0] = temp.transform.position;
+					linePoints[0].z = 1;
+					linePoints[1] = node.transform.position;
+					linePoints[1].z = 1;
+					lr.SetPositions(linePoints);
 				}
 
 				node.transform.localScale = new Vector3(step / 100, step / 100, step / 100);
@@ -153,6 +178,19 @@ public class GameLogic : MonoBehaviour
 			int val = (int) _commandsList[i];
 			_commandsList[i] = (MoveSet)((val + 2) % 4);
 		}
+		for (int i = 0; i < dimentions; i++)
+		{	
+			for (int j = 0; j < dimentions; j++)
+			{
+				NodeConnector node = _nodeMatrix[i, j].GetComponent<NodeConnector>();
+				if(node.willClose)
+				{
+					node.isClosed = true;
+					node.GetComponent<Image>().color = Color.red;
+					yield return new WaitForSeconds(0.1f);
+				}
+			}
+		}
 		StartCoroutine(ConnectionAnim(false, 0.5f));
 	}
 
@@ -167,7 +205,11 @@ public class GameLogic : MonoBehaviour
 			else if (command == MoveSet.Down) currCoords.y += 1;
 			else if (command == MoveSet.Left) currCoords.x -= 1;
 			else currCoords.x += 1;
-			nextNode = _nodeMatrix[currCoords.x, currCoords.y];
+
+			if (currCoords.x < 0 || currCoords.x >= dimentions || currCoords.y < 0 || currCoords.y >= dimentions)
+				nextNode = null;
+			else
+				nextNode = _nodeMatrix[currCoords.x, currCoords.y];
 			if (isDisconnecting) 
 			{
 				currNode.GetComponent<LineRenderer>().enabled = false;
@@ -176,11 +218,37 @@ public class GameLogic : MonoBehaviour
 			}
 			else
 			{
+				if (nextNode == null)
+				{
+					currNode.GetComponent<NodeConnector>().ripples.startColor = Color.red;
+					currNode.GetComponent<NodeConnector>().ripples.Play();
+					SoundEffects.instance.DisconnectPlay();
+					yield return new WaitForSeconds(deley);
+					EndMenu.SetActive(true);
+					EndMenu.GetComponentInChildren<typewriterUI>().StartWriting();
+					attemptFeiled = true;
+					break;
+				}
+				else if (nextNode.GetComponent<NodeConnector>().isClosed)
+				{
+					currNode.GetComponent<NodeConnector>().ReverseConnection(nextNode, true);
+					SoundEffects.instance.DisconnectPlay();
+					yield return new WaitForSeconds(deley);
+					EndMenu.SetActive(true);
+					EndMenu.GetComponentInChildren<typewriterUI>().StartWriting();
+					attemptFeiled = true;
+					break;
+				}
 				currNode.GetComponent<NodeConnector>().ReverseConnection(nextNode);
 				SoundEffects.instance.Play();
 			}
 			currNode = nextNode;
 			yield return new WaitForSeconds(deley);
+		}
+		if (!isDisconnecting && !attemptFeiled)
+		{
+			WinMenu.SetActive(true);
+			WinMenu.GetComponentInChildren<typewriterUI>().StartWriting();
 		}
 	}
 

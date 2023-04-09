@@ -9,6 +9,7 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 {
 	public float width = 5f;
 	public Color color = Color.cyan;
+	public bool willClose = false;
 	public bool isClosed = false;
 	public bool isFinish = false;
 	public GameLogic gl;
@@ -109,7 +110,7 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 		snappingNode = null;
 	}
 
-	public void ReverseConnection(GameObject dest)
+	public void ReverseConnection(GameObject dest, bool isFailed = false)
 	{
 		linePoints[0] = transform.position;
 		linePoints[0].z = 0;
@@ -117,6 +118,14 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 		linePoints[1].z = 0;
 		lr.SetPositions(linePoints);
 		lr.enabled = true;
+
+		if (isFailed)
+		{
+			lr.material.color = Color.red;
+			dest.GetComponent<NodeConnector>().ripples.startColor = Color.red;
+		}
+
+
 		dest.GetComponent<NodeConnector>().ripples.Play();
 	}
 	void Update()
