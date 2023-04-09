@@ -62,11 +62,7 @@ public class MazeGenerator : MonoBehaviour
     private ((int, int), (int, int)) GenerateStartAndFinish()
     {
         System.Random rand = new System.Random();
-        if (rand.Next(0, 2) == 0)
-        {
-            return ((_height-1, rand.Next(0,2)*(_width-1)), (0, rand.Next(0,2)*(_width-1)));
-        }
-        return ((0, rand.Next(0,2)*(_width-1)), (_height-1, rand.Next(0,2)*(_width-1)));
+        return ((0, rand.Next((_height-1))), (_width-1, rand.Next((_height-1))));
     }
 
     public NodeState[][] Generate(int h = 5, int w = 5, int paths = 1)

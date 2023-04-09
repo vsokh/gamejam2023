@@ -10,6 +10,7 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 	public float width = 5f;
 	public Color color = Color.cyan;
 	public bool isClosed = false;
+	public bool isFinish = false;
 	public GameLogic gl;
 	private LineRenderer lr;
 	private Vector3[] linePoints = new Vector3[2];
@@ -36,7 +37,7 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
-		if (gl.IsListHead(gameObject))
+		if (gl.IsListHead(gameObject) && !gl.pathCreated)
 		{
 			gl.SetActiveNode(gameObject);
 			trackMouse = true;
@@ -48,7 +49,7 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 	{
 		if (gameObject == gl.GetActiveNode())
 		{
-			if (snappingNode && gl.IsValidTarget(snappingNode))
+			if (snappingNode && gl.IsValidTarget(snappingNode) && !gl.IsPrevNode(snappingNode))
 			{
 				linePoints[1] = snappingNode.transform.position;
 				lr.SetPositions (linePoints);
@@ -101,13 +102,6 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 	public void LineSnap(GameObject candicate)
 	{
 		snappingNode = candicate;
-		// Camera c = Camera.main;
-		// Vector3 mousePos = c.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, c.nearClipPlane));
-
-		// linePoints[1] = (mousePos + pos) / 2;
-		// linePoints[1].z = 0;
-		// lr.SetPositions (linePoints);
-		// trackMouse = false;
 	}
 
 	public void LineRelease()
