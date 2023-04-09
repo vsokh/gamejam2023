@@ -10,14 +10,14 @@ public enum NodeState : sbyte
     Closed
 }
 
-public class MazeGenerator
+public class MazeGenerator : MonoBehaviour
 {
     private int _height;
     private int _width;
     private int _paths;
     private NodeState[][] _maze;
 
-    public MazeGenerator(int h = 10, int w = 10, int paths = 1)
+    private void Init(int h, int w, int paths)
     {
         _height = h;
         _width = w;
@@ -33,8 +33,10 @@ public class MazeGenerator
         }
     }
 
-    public NodeState[][] Generate()
+    public NodeState[][] Generate(int h = 5, int w = 5, int paths = 1)
     {
+        Init(h, w, paths);
+
         int startX = new System.Random().Next(_height);
         int startY = new System.Random().Next(_width);
 
@@ -85,7 +87,10 @@ public class MazeGenerator
         if (visited[currX][currY])         return false;
 
         // We have found a path, let's get back
-        if (currX == finishX && currY == finishY) return true;
+        if (_maze[currX][currY] == NodeState.Finish)
+        {
+            return true;
+        }
 
         visited[currX][currY] = true;
 
@@ -94,7 +99,7 @@ public class MazeGenerator
         }
 
         List<(int,int)> neighbors = GetNeighbors(currX, currY, ref visited);
-        int N = neighbors.Count-1;
+        int N = neighbors.Count;
         for (int idx = 0; idx < N; ++idx) {
             var neighbor = neighbors[UnityEngine.Random.Range(0, N)];
             if (!visited[neighbor.Item1][neighbor.Item2] && GenerateImpl(neighbor.Item1, neighbor.Item2, finishX, finishY, ref visited)) {

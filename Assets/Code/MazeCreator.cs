@@ -12,14 +12,24 @@ public class MazeCreator: MonoBehaviour
 		Closed
 	};
 
-	public object Generate(int dimentions)
+	public NodeState[][] Generate(int dimentions)
 	{
-		NodeState[,] maze = new NodeState[dimentions, dimentions];
+		NodeState[][] maze;
 
-		maze[Random.Range(0, dimentions), Random.Range(0, dimentions)] = NodeState.Closed;
-		maze[Random.Range(0, dimentions), Random.Range(0, dimentions)] = NodeState.Closed;
-		maze[Random.Range(0, dimentions), Random.Range(0, dimentions)] = NodeState.Closed;
-		maze[Random.Range(0, dimentions), Random.Range(0, dimentions)] = NodeState.Closed;
+        maze = new NodeState[dimentions][];
+        for (int i = 0; i < dimentions; i++)
+        {
+           maze[i] = new NodeState[dimentions];
+            for (int j = 0; j < dimentions; j++)
+            {
+                maze[i][j] = NodeState.Open;
+            }
+        }
+
+		maze[Random.Range(0, dimentions)][Random.Range(0, dimentions)] = NodeState.Closed;
+		maze[Random.Range(0, dimentions)][Random.Range(0, dimentions)] = NodeState.Closed;
+		maze[Random.Range(0, dimentions)][Random.Range(0, dimentions)] = NodeState.Closed;
+		maze[Random.Range(0, dimentions)][Random.Range(0, dimentions)] = NodeState.Closed;
 
 		return maze;
 	}

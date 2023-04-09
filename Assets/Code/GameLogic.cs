@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class GameLogic : MonoBehaviour
 {
-	[SerializeField] private MazeCreator mc;
-	private MazeCreator.NodeState[, ] mazeMatrix;
+	[SerializeField] private MazeGenerator mazeGenerator;
+	private NodeState[][] mazeMatrix;
 	private GameObject activeNode = null;
 	public GameObject NodePrefub;
 	public int dimentions = 5;
@@ -16,8 +16,7 @@ public class GameLogic : MonoBehaviour
 	void Start()
 	{
 		//Generate Maze
-		mazeMatrix = (MazeCreator.NodeState[,])mc.Generate(dimentions);
-
+		mazeMatrix = mazeGenerator.Generate(dimentions, dimentions);
 
 		//Draw Nodes to screen
 		RectTransform rt = gameObject.GetComponent<RectTransform>();
@@ -33,7 +32,7 @@ public class GameLogic : MonoBehaviour
 			{
 				Vector2 newCord = startCord + new Vector2(step * i, -step * j);
 				GameObject node = Instantiate(NodePrefub, new Vector3(newCord.x, newCord.y, 0), Quaternion.identity, transform);
-				if (mazeMatrix[i, j] ==  MazeCreator.NodeState.Closed)
+				if (mazeMatrix[i][j] == NodeState.Closed)
 				{
 					node.GetComponent<Image>().color = Color.red;
 					node.GetComponent<NodeConnector>().isClosed = true;
