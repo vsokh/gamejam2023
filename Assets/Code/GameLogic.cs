@@ -17,19 +17,24 @@ public class GameLogic : MonoBehaviour
 	[SerializeField] private MazeCreator mazeCreator;
 	private NodeState[][] mazeMatrix;
 	private GameObject activeNode = null;
+	private GameObject finishNode = null;
+	private Vector2Int finishCoords;
+	private GameObject startNode = null;
+	private Vector2Int startCoords;
 	public GameObject NodePrefub;
 	public int dimentions = 5;
 	public bool pathCreated = false;
 
 	private List<GameObject> _nodeList = new List<GameObject>();
-	[SerializeField] private List<MoveSet> _commandsList = new List<MoveSet>();
+	private GameObject[,] _nodeMatrix;
+	private List<MoveSet> _commandsList = new List<MoveSet>();
 
 	private float step;
 	void Start()
 	{
 		//Generate Maze
 		mazeMatrix = mazeGenerator.Generate(dimentions, dimentions);
-
+		_nodeMatrix = new GameObject[dimentions, dimentions];
 		//Draw Nodes to screen
 		RectTransform rt = gameObject.GetComponent<RectTransform>();
 		int w = Mathf.RoundToInt(rt.rect.width);
@@ -53,16 +58,22 @@ public class GameLogic : MonoBehaviour
 				{
 					_nodeList.Add(node);
 					node.GetComponent<Image>().color = Color.yellow;
+					startNode = node;
+					startCoords = new Vector2Int(i, j);
 				}
 				else if (mazeMatrix[i][j] == NodeState.Finish)
 				{
-					node.GetComponent<Image>().color = Color.cyan;
+					node.GetComponent<Image>().color = Color.yellow;
+					finishNode = node;
+					finishCoords = new Vector2Int(i, j);
 					node.GetComponent<NodeConnector>().isFinish = true;
 				}
 
 				node.transform.localScale = new Vector3(step / 100, step / 100, step / 100);
 				node.GetComponent<NodeConnector>().gl = this;
 				node.SetActive(true);
+
+				_nodeMatrix[i, j] = node;
 			}
 		}
 	}
@@ -123,7 +134,7 @@ public class GameLogic : MonoBehaviour
 		if (newNode.GetComponent<NodeConnector>().isFinish == true)
 		{
 			pathCreated = true;
-			ReversePing();
+			StartCoroutine(ReversePing());
 		}	
 	}
 
@@ -132,12 +143,38 @@ public class GameLogic : MonoBehaviour
 		return _nodeList.Count > 1 && _nodeList[_nodeList.Count - 2] == testNode;
 	}
 
-	private void ReversePing()
+	private IEnumerator ReversePing()
 	{
+		StartCoroutine(ConnectionAnim(true, 0.3f));
+		yield return new WaitForSeconds((_commandsList.Count + 1) * 0.3f);
 		for (int i = 0; i < _commandsList.Count; i++)
 		{
 			int val = (int) _commandsList[i];
 			_commandsList[i] = (MoveSet)((val + 2) % 4);
+		}
+		StartCoroutine(ConnectionAnim(false, 0.5f));
+	}
+
+	private IEnumerator ConnectionAnim(bool isDisconnecting, float deley)
+	{
+		GameObject currNode = isDisconnecting ? startNode : finishNode;
+		GameObject nextNode = null;
+		Vector2Int currCoords = isDisconnecting ? startCoords : finishCoords;
+		foreach (MoveSet command in _commandsList)
+		{
+			if (command == MoveSet.Up) currCoords.y -= 1;
+			else if (command == MoveSet.Down) currCoords.y += 1;
+			else if (command == MoveSet.Left) currCoords.x -= 1;
+			else currCoords.x += 1;
+			nextNode = _nodeMatrix[currCoords.x, currCoords.y];
+			if (isDisconnecting) 
+			{
+				currNode.GetComponent<LineRenderer>().enabled = false;
+				nextNode.GetComponent<NodeConnector>().connect.Play();
+			}
+			else currNode.GetComponent<NodeConnector>().ReverseConnection(nextNode);
+			currNode = nextNode;
+			yield return new WaitForSeconds(deley);
 		}
 	}
 

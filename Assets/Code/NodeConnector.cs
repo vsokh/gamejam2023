@@ -108,6 +108,17 @@ IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandle
 	{
 		snappingNode = null;
 	}
+
+	public void ReverseConnection(GameObject dest)
+	{
+		linePoints[0] = transform.position;
+		linePoints[0].z = 0;
+		linePoints[1] = dest.transform.position;
+		linePoints[1].z = 0;
+		lr.SetPositions(linePoints);
+		lr.enabled = true;
+		dest.GetComponent<NodeConnector>().ripples.Play();
+	}
 	void Update()
 	{
 		if (trackMouse)

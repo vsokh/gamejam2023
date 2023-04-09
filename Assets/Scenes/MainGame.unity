@@ -1036,8 +1036,6 @@ MonoBehaviour:
   NodePrefub: {fileID: 7878671266341363585, guid: d9c61c3eafca6624b9573a9574cb81fe, type: 3}
   dimentions: 8
   pathCreated: 0
-  onConnectSound: {fileID: 0}
-  _commandsList: 
 --- !u!114 &1457655853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1208,7 +1206,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1982732156
 MonoBehaviour:
   m_ObjectHideFlags: 0
