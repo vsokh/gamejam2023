@@ -33,19 +33,8 @@ public class MazeGenerator : MonoBehaviour
         }
     }
 
-    public NodeState[][] Generate(int h = 5, int w = 5, int paths = 1)
+    private bool[][] NewVisited()
     {
-        Init(h, w, paths);
-
-        int startX = new System.Random().Next(_height);
-        int startY = new System.Random().Next(_width);
-
-        int finishX = new System.Random().Next(_height);
-        int finishY = new System.Random().Next(_width);
-
-        _maze[startX][startY] = NodeState.Start;
-        _maze[finishX][finishY] = NodeState.Finish;
-
         bool[][] visited = new bool[_height][];
         for (int i = 0; i < _height; i++)
         {
@@ -55,9 +44,46 @@ public class MazeGenerator : MonoBehaviour
                 visited[i][j] = false;
             }
         }
+        return visited;
+    }
+
+    private void ClearVisited(ref bool[][] visited)
+    {
+        for (int i = 0; i < _height; i++)
+        {
+            for (int j = 0; j < _width; j++)
+            {
+                visited[i][j] = false;
+            }
+        }
+    }
+
+    // ((startX, startY), (finishX, finishY)))
+    private ((int, int), (int, int)) GenerateStartAndFinish()
+    {
+        System.Random rand = new System.Random();
+        if (rand.Next(0, 2) == 0)
+        {
+            return ((_height-1, rand.Next(0,2)*(_width-1)), (0, rand.Next(0,2)*(_width-1)));
+        }
+        return ((0, rand.Next(0,2)*(_width-1)), (_height-1, rand.Next(0,2)*(_width-1)));
+    }
+
+    public NodeState[][] Generate(int h = 5, int w = 5, int paths = 1)
+    {
+        Init(h, w, paths);
+
+        // ((startX, startY), (finishX, finishY)))
+        ((int, int), (int, int)) pos = GenerateStartAndFinish();
+
+        _maze[pos.Item1.Item1][pos.Item1.Item2] = NodeState.Start;
+        _maze[pos.Item2.Item1][pos.Item2.Item2] = NodeState.Finish;
+
+        bool[][] visited = NewVisited();
         for (int pathIdx = 0; pathIdx < _paths; pathIdx++)
         {
-            GenerateImpl(startX, startY, finishX, finishY, ref visited);
+            ClearVisited(ref visited);
+            GenerateImpl(pos.Item1.Item1, pos.Item1.Item2, pos.Item2.Item1, pos.Item2.Item2, ref visited);
         }
         return _maze;
     }
