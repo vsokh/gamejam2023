@@ -9,8 +9,11 @@ public class SoundEffects : MonoBehaviour
 
     public AudioSource src;
     public AudioSource disconnectSrc;
+    public AudioSource closeSrc;
 
     public int scale = 6;
+
+    public bool showTutor = true;
 
     void Update()
     {
@@ -25,6 +28,11 @@ public class SoundEffects : MonoBehaviour
     public void DisconnectPlay()
     {
         disconnectSrc.Play();
+    }
+
+    public void ClosePlay()
+    {
+        closeSrc.Play();
     }
     public void Awake()
     {

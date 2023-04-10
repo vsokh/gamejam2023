@@ -48,7 +48,7 @@ public class GameLogic : MonoBehaviour
 		int w = Mathf.RoundToInt(rt.rect.width);
 		int h = Mathf.RoundToInt(rt.rect.height);
 
-		int gridSize = Mathf.RoundToInt(Mathf.Min(w, h) * 0.9f);
+		int gridSize = Mathf.RoundToInt(Mathf.Min(w, h) * 0.8f);
 		step = gridSize / dimentions;
 		Vector2 startCord = new Vector2(-gridSize / 2 + step / 2, gridSize / 2 - step /2);
 		for (int i = 0; i < dimentions; i++)
@@ -190,11 +190,12 @@ public class GameLogic : MonoBehaviour
 				{
 					node.isClosed = true;
 					node.GetComponent<Image>().color = Color.red;
-					yield return new WaitForSeconds(0.1f);
+					SoundEffects.instance.ClosePlay();
+					yield return new WaitForSeconds(0.05f);
 				}
 			}
 		}
-		StartCoroutine(ConnectionAnim(false, 0.5f));
+		StartCoroutine(ConnectionAnim(false, 0.3f));
 	}
 
 	private IEnumerator ConnectionAnim(bool isDisconnecting, float deley)
