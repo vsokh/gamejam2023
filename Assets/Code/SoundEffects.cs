@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SoundEffects : MonoBehaviour
 {
@@ -8,6 +9,14 @@ public class SoundEffects : MonoBehaviour
 
     public AudioSource src;
     public AudioSource disconnectSrc;
+
+    public int scale = 6;
+
+    void Update()
+    {
+        Slider slider = FindObjectOfType<Slider>();
+        if (slider != null) scale = Mathf.CeilToInt(slider.value);
+    }
 
     public void Play()
     {

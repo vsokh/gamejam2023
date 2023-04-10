@@ -269,7 +269,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Try again
+  m_text: Play again
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -1782,7 +1782,8 @@ MonoBehaviour:
   NodePrefub: {fileID: 7878671266341363585, guid: d9c61c3eafca6624b9573a9574cb81fe, type: 3}
   StartPrefub: {fileID: 8872227092066233852, guid: 4bca7656ea7c2b24da732b8f1fe62a00, type: 3}
   FinishPrefub: {fileID: 8872227092066233852, guid: 385c548dfe62e314986cde238cad5ba3, type: 3}
-  dimentions: 5
+  dimentions: 6
+  roadsNumber: 4
   pathCreated: 0
 --- !u!114 &1457655853
 MonoBehaviour:

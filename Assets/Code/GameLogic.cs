@@ -27,7 +27,8 @@ public class GameLogic : MonoBehaviour
 	public GameObject NodePrefub;
 	public GameObject StartPrefub;
 	public GameObject FinishPrefub;
-	public int dimentions = 5;
+	public int dimentions = 8;
+	public int roadsNumber = 4;
 	public bool pathCreated = false;
 
 	private List<GameObject> _nodeList = new List<GameObject>();
@@ -37,8 +38,10 @@ public class GameLogic : MonoBehaviour
 	private float step;
 	void Start()
 	{
+		dimentions = SoundEffects.instance.scale;
+		roadsNumber = (int)Mathf.Ceil((float)dimentions / 2);
 		//Generate Maze
-		mazeMatrix = mazeGenerator.Generate(dimentions, dimentions);
+		mazeMatrix = mazeCreator.Generate(dimentions, roadsNumber);
 		_nodeMatrix = new GameObject[dimentions, dimentions];
 		//Draw Nodes to screen
 		RectTransform rt = gameObject.GetComponent<RectTransform>();
