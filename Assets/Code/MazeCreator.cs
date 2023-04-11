@@ -6,8 +6,12 @@ public class MazeCreator: MonoBehaviour
 {
 	public NodeState[][] Generate(int dimentions, int roadsNum)
 	{
-		Vector2Int start = new Vector2Int(0, Random.Range(0, dimentions));
-		Vector2Int finish = new Vector2Int(dimentions - 1, Random.Range(0, dimentions));
+		int randH1 = Random.Range(dimentions / 2, dimentions);
+		int randH2 = Random.Range(0, dimentions / 2);
+		if (randH1 == randH2)
+			randH2 = Random.Range(0, dimentions /2);
+		Vector2Int start = new Vector2Int(0, randH1);
+		Vector2Int finish = new Vector2Int(dimentions - 1, randH2);
 
 		LinkedList<Vector2Int>[] roads = new LinkedList<Vector2Int>[roadsNum];
 		for (int i = 0; i < roadsNum; i++)

@@ -9,7 +9,7 @@ public class typewriterUI : MonoBehaviour
 	TMP_Text _tmpProText;
 	string writer;
 
-	[SerializeField] float delayBeforeStart = 0f;
+	[SerializeField] public float delayBeforeStart = 0f;
 	[SerializeField] float timeBtwChars = 0.1f;
 	[SerializeField] string leadingChar = "";
 	[SerializeField] bool leadingCharBeforeDelay = false;

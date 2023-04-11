@@ -11,7 +11,7 @@ public class SoundEffects : MonoBehaviour
     public AudioSource disconnectSrc;
     public AudioSource closeSrc;
 
-    public int scale = 6;
+    public int scale = 0;
 
     public bool showTutor = true;
 

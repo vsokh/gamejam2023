@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class GameLogic : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class GameLogic : MonoBehaviour
 	[SerializeField] private MazeCreator mazeCreator;
 	[SerializeField] private GameObject EndMenu;
 	[SerializeField] private GameObject WinMenu;
+	[SerializeField] private TMP_Text winScore;
+	private int scoreNum = 0;
 	private NodeState[][] mazeMatrix;
 	private GameObject activeNode = null;
 	private GameObject finishNode = null;
@@ -176,9 +179,13 @@ public class GameLogic : MonoBehaviour
 	{
 		StartCoroutine(ConnectionAnim(true, 0.3f));
 		yield return new WaitForSeconds((_commandsList.Count + 1) * 0.3f);
+		MoveSet lastCommand = _commandsList[0];
+		scoreNum = 0;
 		for (int i = 0; i < _commandsList.Count; i++)
 		{
 			int val = (int) _commandsList[i];
+			if (lastCommand != _commandsList[i]) scoreNum++;
+			lastCommand = _commandsList[i];
 			_commandsList[i] = (MoveSet)((val + 2) % 4);
 		}
 		for (int i = 0; i < dimentions; i++)
@@ -253,6 +260,9 @@ public class GameLogic : MonoBehaviour
 		{
 			WinMenu.SetActive(true);
 			WinMenu.GetComponentInChildren<typewriterUI>().StartWriting();
+			winScore.text = "Score: " + scoreNum.ToString();
+			winScore.gameObject.GetComponent<typewriterUI>().delayBeforeStart = 1;
+			winScore.gameObject.GetComponent<typewriterUI>().StartWriting();
 		}
 	}
 
